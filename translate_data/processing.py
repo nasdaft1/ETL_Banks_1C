@@ -1,123 +1,83 @@
 # -*- coding:utf8 -*-
-import dict_company as dt
+import dict_list_company as dt
 
 
-def owner1(_line_dick):
-    _date = _line_dick.setdefault("Дата=")
-    _payment_purpose = _line_dick.setdefault("НазначениеПлатежа=")
-    _number = _line_dick.setdefault("Номер=")
-    # определение кому из хозяиствующих субъектов принадлежит счет, исключений
-    _payer_name_inn = _line_dick.setdefault("ПлательщикИНН=")
-    _recipient_name_inn = _line_dick.setdefault("ПолучательИНН=")
-    _payer_name = _line_dick.setdefault("Плательщик1=")
-    _recipient_name = _line_dick.setdefault("Получатель1=")
-    if _payer_name_inn == '6324030091':
-        # value = 1
-        value1 = dt.dict_company.setdefault(_recipient_name_inn, None)
-        if value1 is None:
-            value1 = dt.dict_company_not_inn.setdefault(_recipient_name, None)
-            print(_date, _number, _payment_purpose, _payer_name_inn, _recipient_name_inn, value1)
-        else:
-            print(_date, _number, _payment_purpose, _payer_name_inn, _recipient_name_inn, value1[1])
+#def test(v1, v2, v3, v4, v5, v6, v7):
+#    l = [v1, v2, v3, v4, v5, v6, v7]
+#    for x in range(2,7):
+#        if l[x-1]!='X' and l[x]=='X':
+#            return 'error'
+#    return 'ok'
+
+
+def owner_inn(name_inn, value):  # определение владельца платежа по словарю ИНН компаний
+    r_value = dt.dict_company_inn.setdefault(name_inn, None)
+    if r_value is None:
+        return value
     else:
-        # value = 2
-        value1 = dt.dict_company.setdefault(_payer_name_inn, None)  # _payer_name
-        if value1 is None:
-            value1 = dt.dict_company_not_inn.setdefault(_recipient_name, None)
-            print(_date, _number, _payment_purpose, _payer_name_inn, _recipient_name_inn, value1)
-        else:
-            print(_date, _number, _payment_purpose, _payer_name_inn, _recipient_name_inn, value1[1])
-    # if value1 is None:
-    #    print('x')
-    # else:
-    #    print(_date, _number, _payment_purpose, value, _payer_name_inn, _recipient_name_inn, value1[1])
-    #    value1 = dt.dict_company_not_inn.setdefault(_payer_name, 'G')
-    #    #value = dt.dict_company.setdefault("ПолучательИНН=", 'N')
-    #    value = dt.dict_company.setdefault("ПлательщикИНН=", 'N')
-    # else:
-    #    value = dt.dict_company.setdefault("ПолучательИНН=", 'N')
-    #    #value = dt.dict_company.setdefault("ПлательщикИНН=", 'N')
+        return r_value[1]
 
 
-def owner(_line_dick):
-    _date = _line_dick.setdefault('Date=')
-    _payment_purpose = _line_dick.setdefault('"НазначениеПлатежа="')
-    _number = _line_dick.setdefault('Номер=')
-    # определение кому из хозяиствующих субъектов принадлежит счет, исключений
-    _payer = _line_dick.setdefault('ПлательщикИНН =')
-    print(_date, _payment_purpose, _number, _payer)
-    if _payer == '6324030091':
-        value = dt.dict_company.setdefault('Получатель1=', 'N')
+def owner_name(name, value):  # определение владельца платежа по словарю название компании или ФИО
+    r_value = dt.dict_company_name.setdefault(name, None)
+    if r_value is None:
+        return value
     else:
-        value = dt.dict_company.setdefault('Плательщик1=', 'N')
+        return r_value
 
-    if 'Алименты' in _payment_purpose:
-        if _date < '2017.04.15':
-            value = 'B'
-        else:
-            value = 'KA'
-    if 'бухгалтерские' in _payment_purpose:
-        if _date < '2020.02.01':
-            value = 'B'
-    if 'Возврат по операции' in _payment_purpose:
-        value = 'B'
-    if 'Заявка на внесение наличных' in _payment_purpose:
-        value = 'B'
-    if 'Комиссия за ведение банковского' in _payment_purpose:
-        value = 'B'
-    if 'за терминал' in _payment_purpose:
-        value = 'B'
-    if 'депозит' in _payment_purpose:
-        value = 'B'
-    if 'процентов' in _payment_purpose:
-        value = 'B'
-    if 'Страховые взносы' in _payment_purpose:
-        value = 'B'
-    if 'страховые взносы' in _payment_purpose:
-        value = 'B'
-    if 'Возмещение средств по операциям' in _payment_purpose:
-        value = 'B'
-    if 'Комиссия по реестру' in _payment_purpose:
-        value = 'B'
-    if 'Налог на доходы физических лиц' in _payment_purpose:
-        value = 'B'
-    if 'временная финансовая помощь' in _payment_purpose:
-        value = 'B'
-    if 'Комиссия за открытие счета' in _payment_purpose:
-        value = 'B'
-    if 'подлинности подписей' in _payment_purpose:
-        value = 'B'
-    if 'Налог, уплачиваемый при применении УСН' in _payment_purpose:
-        value = 'X'
-    if _number == '140' and _date == '2021.08.12':  # одноразовая покупка КВАНТ
-        value = 'B'
-    if _number == '1' and _date == '2015.04.14':  # Возврат по ПП No 1 от 07/04/2015
-        value = 'B'
-    if _number == '268576' and _date == '2016.09.06':  # ЛАСКИНА ЕЛЕНА АНАТОЛЬЕВНА
-        value = 'K'
-    if _number == '17' and _date == '2019.01.31':  # одноразовая покупка КОМПАСС
-        value = 'B'
-    if _number == '102' and _date == '2021.06.08':  # одноразовая покупка КОМПАСС
-        value = 'B'
-    if _number == '45' and _date == '2017.05.11':  # одноразовая покупка КОМПАСС
-        value = 'B'
-    if _number == '65' and _date == '2016.06.14':  # одноразовая покупка КОМПАСС
-        value = 'B'
-    if _number == '194' and _date == '2019.11.14':  # одноразовая покупка ВсеИнструменты
-        value = 'B'
-    if _number == '15' and _date == '2020.01.28':  # одноразовая покупка ВсеИнструменты
-        value = 'K'
-    if _number == '103' and _date == '2020.06.03':  # одноразовая покупка ВсеИнструменты
-        value = 'K'
-    if _number == '155' and _date == '2019.09.26':  # одноразовая покупка ВсеИнструменты
-        value = 'K'
-    if _number == '15' and _date == '2020.01.27':  # одноразовая покупка ВсеИнструменты
-        value = 'K'
-    if _number == '121' and _date == '2016.10.03':  # оплата за платеж прошла через несколько дат
-        value = 'K'
-    if _number == '980' and _date == '2019.05.20':  # на основании ст.46 НК РФ
-        value = 'B'
+
+def owner_exceptions_purpose(payment_purpose, value):
+    # определение владельца платежа по списку фрагментов названия платежа
+    for line in dt.list_payments_exception:
+        if payment_purpose.find(line[0]) != -1:
+            return line[1]
     return value
+
+
+def owner_exceptions_number_date(number, date, value):
+    # определение владельца платежа по номеру и дате платежа как частное исключение из остальных правил
+    for line in dt.list_number_date_exception:
+        if (line[0] == number) and (line[1] == date):
+            return line[2]
+    return value
+
+
+def owner_date_payments(date, payment_purpose, value):
+    for line in dt.list_date_payments_exception:
+        if line[1] == '<':
+            if date < line[0] and payment_purpose.find(line[2]) != -1:
+                value = line[3]
+        if line[1] == '>':
+            if date > line[0] and payment_purpose.find(line[2]) != -1:
+                value = line[3]
+    return value
+
+
+def owner(_line_dict):  # распределение кто является владельцем данного платежа
+    value = 'X'
+    # определение кому из хозяиствующих субъектов принадлежит счет, исключений
+    _payer_name_inn = _line_dict.setdefault("ПлательщикИНН=")  # для dict_company
+    _recipient_name_inn = _line_dict.setdefault("ПолучательИНН=")  # для dict_company
+    value1 = owner_inn(_payer_name_inn, value)
+    value2 = owner_inn(_recipient_name_inn, value1)
+
+    _payer_name = _line_dict.setdefault("Плательщик1=")  # для dict_company_not_inn
+    _recipient_name = _line_dict.setdefault("Получатель1=")  # для dict_company_not_inn
+
+    value3 = owner_name(_payer_name, value2)
+    value4 = owner_name(_recipient_name, value3)
+
+    _number = _line_dict.setdefault("Номер=")  # для dict_company_exception
+    _date = _line_dict.setdefault("Дата=")  # для dict_company_exception
+    _payment_purpose = _line_dict.setdefault("НазначениеПлатежа=")  # для dict_company_exception
+    value5 = owner_date_payments(_date, _payment_purpose, value4)  # исключение по дате и названию платежки
+    value6 = owner_exceptions_purpose(_payment_purpose, value5)
+    value7 = owner_exceptions_number_date(_number, _date, value6)
+    # if  _payer_name_inn =='6321327104' or '6321327104'==_recipient_name_inn:
+    #if test(value1, value2, value3, value4, value5, value6, value7)=='error':
+    #    print(value1, value2, value3, value4, value5, value6, value7, _payment_purpose)
+    #    print('             ', _payer_name, _recipient_name, _payer_name_inn, _recipient_name_inn)
+    return value7
 
 
 def _cell_mod():  # функция для получения длины слов, для ускорения выполнения программы и упрощения модицикации кода
@@ -134,7 +94,7 @@ def reading_file_KC(path_and_file: str):  # чтение файлов 1С фор
     n = 0
     for read_line_start in file1:
         n += 1
-        if n == 20:
+        if n == 20:  # для уменьшение поиска значения увеличение производительности если фаил не корректный
             _settlement_bank = ''
             break  # прервать если в начале файла не найдены нужные файлы
         if read_line_start.find("РасчСчет=") == 0:
@@ -145,6 +105,11 @@ def reading_file_KC(path_and_file: str):  # чтение файлов 1С фор
 
 
 def summ_convert(_line, txt):
+    """
+    :param _line: словарь
+    :param txt: название ключа котрое обрабатываем
+    :return: словарь в котором меняем тип данных на float по указанному ключу txt
+    """
     _summa = _line.setdefault(txt, None)
     if _summa != None:  # переделывает тип в float
         try:
@@ -167,7 +132,7 @@ def date_convert(_line, txt):  # переделывает формат в нор
     return _line
 
 
-def status(_line):  # определение типа операции по ИНН Плательшика
+def status(_line):  # определение типа операции по ИНН Плательшика debit/credit
     if _line.setdefault("ПлательщикИНН=", None) == '6324030091':
         #    _owner = owner(_recipient_name, _date_correct, _number, _payment_purpose)
         _line["Статус="] = 'Credit'
@@ -196,13 +161,14 @@ def С1_reading_file(path_and_file: str, company_dict: dict):  # чтение ф
             summ_convert(_line, "Сумма=")
             date_convert(_line, "Дата=")
             status(_line)
-            owner1(_line)
+            value = owner(_line)
+            _line['Владелец='] = value
             # необходимо создать копию объекта в противном случае все данные стираются clear
             _block.append([_line.copy()])
             # company_dict[_line.setdefault("ПлательщикИНН=", None)] = _line.setdefault("Плательщик1=", None)
             # company_dict[_line.setdefault("ПолучательИНН=", None)] = _line.setdefault("Получатель1=", None)
-            company_dict[_line.setdefault("Плательщик1=", None)] = _line.setdefault("ПлательщикИНН=", None)
-            company_dict[_line.setdefault("Получатель1=", None)] = _line.setdefault("ПолучательИНН=", None)
+            # company_dict[_line.setdefault("Плательщик1=", None)] = _line.setdefault("ПлательщикИНН=", None)
+            # company_dict[_line.setdefault("Получатель1=", None)] = _line.setdefault("ПолучательИНН=", None)
             _line.clear()
     file2.close()
     return _block, company_dict

@@ -88,15 +88,36 @@ def processing1(block: list):
             _date_old = _date
     return payment
 
+def start():
+    # добавить чтение парсинг из конфигурационного файла
+    # ?????
+    # ?????
+    # ?????
+    block = WF.read_files_block('C:\\report', '.txt')
+    return block
 
 if __name__ == '__main__':
-    start = perf_counter()
-    block = WF.read_files_block('C:\\report', '.txt')
+    d={}
+    start_time = perf_counter()
+    block = start()
+    n, m = 0, 0
+    for x in range(len(block)):
+        n += 1
+        y = dict(block[x][0])
+        y1 = y.setdefault('Владелец=', None)
+        d[y1] = d.setdefault(y1, 0) + 1
 
-    #for x in block:
+        if y.setdefault('Владелец=', None) == 'В':
+            m += 1
+            print(y)
+    print(d)
+
+    print('Всего = ', n)
+    print('X = ', m)
+    # for x in block:
     #    print(x[0])
-    end = perf_counter()  # получение времени
-    print(end - start)  # расчет времени
+    end_time = perf_counter()  # получение времени
+    print(end_time - start_time)  # расчет времени
 
     # block, company_dict, payment_doc = read_files_block('C:\\report', '.txt')
     # print('---------------------------------------------------------------------------------------')
