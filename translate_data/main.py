@@ -1,131 +1,54 @@
 # -*- coding:utf8 -*-
 from time import perf_counter
-import work_file as WF
-
-
-def find_x(_owner: str, _number: str, _correction_list: list):
-    if _owner == 'X':  # определяем не распределенные платежки банку за обслуживание платежей
-        for position_x in _correction_list:
-            if (position_x[1] == _number and position_x[0] != 'X'):
-                return position_x[0]
-    return _owner
-
-
-def redistribution(block: list):
-    _block_new = []
-    for line in block:
-        if line[0] == 'O':
-            # print(line)
-            line[0] = 'B'
-            _block_new.append(line)
-            # '6321125732'
-            line[0] = 'N'
-            line[8] = 1000
-            line[11] = 'internally'
-            _block_new.append(line)
-        else:
-            _block_new.append(line)
-    #  обработать "ВАШ БУХГАЛТЕР"
-    return _block_new
-
-
-def payment_list(block: list, payment_doc: dict):
-    # Для анализа обработанных и не обработанных платежей
-    # При правельном распределении должно остаться N=0
-    company_dict_N = {}  # словарь для неизвестных компаний
-
-    o, b, x, k, n = 0, 0, 0, 0, 0
-    for line in block:
-        if line[0] == 'X':
-            line_x = find_x(line[0], line[7], payment_doc.setdefault(line[6]))
-            line[0] = line_x  # замена индикатора владельца виртуального счета
-
-    for line in block:
-        if (line[0] == 'O') or (line[0] == 'N'):
-            print(line)
-        # print(line)
-        # производим расчет обработанных и не обработанных данных
-        if line[0] == 'B':
-            b += 1
-        if line[0] == 'X':
-            x += 1
-        if line[0] == 'K':
-            k += 1
-        if line[0] == 'O':
-            o += 1
-        if not (line[0] == 'K' or line[0] == 'X' or line[0] == 'B' or line[0] == 'O'):
-            # Составление словаря с контрагентами неизвестно кому пренадлежацими
-            n += 1
-            company_dict_N[line[4]] = 'N'
-            company_dict_N[line[5]] = 'N'
-    for key, value in company_dict_N.items():
-        # распечатывание словаря с контрагентами неизвестно кому пренадлежацими
-        print("'" + key + "':'" + value + "',")
-    print(' Налоги X=', x, '\n Хозяйствующий субъект K=', k,
-          '\n Хозяйствующий субъект B=', b, '\n Совместное использование O=', o, '\n Неизвестный хоз. субъект N=', n)
+import test
+import configparser
+import work_file as wf
+import processing as pr
+# import compensation as cm
 
 
 def sort_block(block: list):
     return sorted(block, key=lambda block: block[6])  # производим сортировку по полю дата в много мерном списке
 
 
-def processing1(block: list):
-    # блок для созадания взаимосвязи платежей и плата за прием и обработку платежных документов
-    # для разделения виртуального разгранечения направления деятельности в фирме
-    # Пример 2020.11.01 , 1, 2, 3   2020.11.02 1, 2, 3, 4, 5    2020.11.05  4, 5, 6
-    line_list, line_list_old = [], []
-    _date_old = ''
-    payment = {}
-    for line in block:
-        _date = line[6]
-        if _date == _date_old:
-            line_list += [[line[0], line[7]]]
-            payment[_date] = line_list  # вводится для того чтобы последнея дата была в словаре со значениями
-        else:
-            payment[_date_old] = line_list_old + line_list
-            line_list_old = line_list
-            line_list = [[line[0], line[7]]]  # присваиваем свое значение
-            _date_old = _date
-    return payment
+def start(file_config: str):
+    config = configparser.ConfigParser()  # парсинг из конфигурационного файла
+    try:
+        config.read(file_config, encoding="utf-8")  # открытие файла конфигурации
+        try:
+            path = config['config']['path']  # путь к каталогу в котором будут искаться фаилы
+            file_type = config['config']['file_type']  # тип файлов которые будет искаться
+        except KeyError:
+            print('\033[1;31mERROR: ошибка конфигурации в файле ' + file_config + ' \033[0m')
+    except IOError:
+        print('\033[1;31mERROR: ненайден ' + file_config + ' в каталоге \033[0m')
+    return wf.read_files_block(path, file_type)
 
-def start():
-    # добавить чтение парсинг из конфигурационного файла
-    # ?????
-    # ?????
-    # ?????
-    block = WF.read_files_block('C:\\report', '.txt')
-    return block
 
 if __name__ == '__main__':
-    d={}
     start_time = perf_counter()
-    block = start()
-    n, m = 0, 0
-    for x in range(len(block)):
-        n += 1
-        y = dict(block[x][0])
-        y1 = y.setdefault('Владелец=', None)
-        d[y1] = d.setdefault(y1, 0) + 1
+    block = start('config.ini')
 
-        if y.setdefault('Владелец=', None) == 'В':
-            m += 1
-            print(y)
-    print(d)
+    block = pr.payment_bank(block)
+    test.test_owner(block)
+    test.test_visual(block, 'O')
 
-    print('Всего = ', n)
-    print('X = ', m)
-    # for x in block:
-    #    print(x[0])
+    # print(block.__sizeof__())
+    # pr.payment_bank(block)  # платежи в банк раскивывает хозяйствующим субъектам, которым принадлежат
+    # block_m = cm.compensation(block)
+    print('-------------------------------------------------------------------------------------------------------')
+    # test.test_owner(block)  # подсчет значений обработанных и не обработанных
+    #  block = cm.compensation(block)
+
+
     end_time = perf_counter()  # получение времени
     print(end_time - start_time)  # расчет времени
 
-    # block, company_dict, payment_doc = read_files_block('C:\\report', '.txt')
-    # print('---------------------------------------------------------------------------------------')
-    # test.test_list_date(block, '08.06.2021') # тестирование для вывода данных по дате
-    # print('---------------------------------------------------------------------------------------')
-    # block_s = sort_block(block)
-    # payment_doc = processing(sort_block(block))
-    # payment_list(block, payment_doc)
-    # end = perf_counter()  # получение времени
-    # print(end - start)  # расчет времени
-# print(test.test_data(block_s, '2016.09.01', '2016.10.10'))
+    # test.test_find(block, 'Дата=', '2021.09.03', False)
+    # test.test_find(block, 'НазначениеПлатежа=', 'Алименты', True)
+    # test.test_find(block, 'НазначениеПлатежа=', 'Плата за прием и обработку платежных документов', False)
+    # test.test_find(block, 'Владелец=', 'V', False)
+    # test.test_find(block, 'Дата=', '2019.09.10', False)
+    # test.test_find(block, 'Дата=', '2021.09.03', False)
+    # test.test_find(block, 'НазначениеПлатежа=', 'Алименты', True)
+    # test.test_find(block, 'НазначениеПлатежа=', 'Плата за прием и обработку платежных документов', False)

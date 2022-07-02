@@ -1,9 +1,9 @@
 # -*- coding:utf8 -*-
 import os
-import processing as PR
+import processing as pr
 
 
-def find_file(path, exp_file):  # поиск файлов по дереву каталогов
+def find_file(path: str, exp_file: str):  # поиск файлов по дереву каталогов
     find_files_list = []
     for root, dirs, files in os.walk(path):
         find_files_list += [os.path.join(root, name) for name in files if name.find(exp_file) != -1]
@@ -13,12 +13,10 @@ def find_file(path, exp_file):  # поиск файлов по дереву ка
 def read_files_block(_path: str, _file: str):  # 'C:\\report\', '.txt'
     # ищем файлы в каталоге [path] с расширением [*.txt]
     block = []  # список транзакции по счетам
-    company_dict = {}  # список компаний
-    # payment_doc = {}  # список ?????
     for path_file in find_file(_path, _file):
         print('обрабатываем фаил ' + path_file)
         # получаем из файла список транзакции и словарь названия компании +ИНН
-        block_x, company_dict = PR.С1_reading_file(path_file, company_dict)
+        block_x = pr.С1_reading_file(path_file)
         block += block_x  # собираем полный список транзакции из всех файлов
     return block
 
