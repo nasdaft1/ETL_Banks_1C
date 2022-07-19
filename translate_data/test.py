@@ -1,22 +1,22 @@
 # -*- coding:utf8 -*-
-#def test_payment_doc(block: dict):  # тестирование по дате
+# def test_payment_doc(block: dict):  # тестирование по дате
 #    for key, value in block.items():
 #        print(key, value)
 
 
-#def test_list_date(block: list, date: str):  # тестирование по дате
+# def test_list_date(block: list, date: str):  # тестирование по дате
 #    for line in block:
 #        if line[6] == date:
 #            print(line)
 
 
-#def test_dict(company_dict: dict):  # отображает не распределенные компании по менеджерам
+# def test_dict(company_dict: dict):  # отображает не распределенные компании по менеджерам
 #    for key, value in dt.dict_company.items():
 #        if not (value == 'K' or value == 'B'):
 #            print(key, value)
 
 
-#def test_data(block: list, data_start: str, data_end=''):
+# def test_data(block: list, data_start: str, data_end=''):
 #    print('-----------find------------------------------------')
 #    if data_end == '':
 #        data_end = data_start
@@ -25,6 +25,14 @@
 #            print(line)
 #    print('-----------end find---------------------------------')
 
+f = [16300,-25,-25,-10337.98,1000,-978,1000,29900,-8811.6,-4069,-1371,-25,-25,-25,1000,45452.5,-10690,-8254,-25,-25,-60,-1794,-60,-2727.15,-6688,
+-25,-21039.37,-25,-8254,-8100.34,-25,-25,-433,-25,-22439.62,-295,-25,-25,-25,900,1000,20000,900,-33016,-25,40000,-6690.85,-25,-435.35,-25,
+30000,-10968.35,-6329,-25,-25,8000,-864,-25,-54,-60,-54,-1800,-480,-6171.25,18000,1000,-7909.7,-4669.4,-100,-5675.89,-25,-1381,
+-25,19000,1000,-15819.4,-25,-8012.47,-5404.8,-25,-25,20000,-1080,-60,-1140,-60,19000,-22305.68,-25,19000,10000,-1140,-1140,-600,
+-1200,45000,-4636.22,-25,-16322,-25,13850,-7259,-4638.02,-25,-25,16000,-16189.8,-25,-2700,-831,-960,-4986.47,-25,-1500,-25,-2750,
+-25,-800,-25,40000,-16189.8,-25,-12659,-1296.94,-25,-25,30000,41000,-13286.22,-5307,-25,-25,-25,-2400,-1800,-2460,23680,-17037.26,
+-25,17000,-8518.63,-25,12000,-2427,-25,12000,-6482.63,-25,4000,-7900,-25,-1420.8,-1020,-720,-720,-240
+]
 
 def test_values(v1, v2, v3, v4, v5, v6, v7):
     l = [v1, v2, v3, v4, v5, v6, v7]
@@ -68,7 +76,7 @@ def test_owner(block):
     d = {}
     line_sum = len(block)
     for line in range(line_sum):
-        #y = dict(block[line])
+        # y = dict(block[line])
         y = block[line]
         y1 = y.owner
         d[y1] = d.setdefault(y1, 0) + 1
@@ -82,4 +90,129 @@ def test_visual(block, key: str = None):
 
         if y.owner == key:
             print(y)
+        if key == None:
+            print(y)
 
+
+# def test_data_summ_x(obj_status, obj_summa, value):
+#    if (obj_status is not None) and (obj_summa is not None):
+#        if obj_status is True:
+#            # print(f'{obj_status}, {obj_summa}, {value}')
+#            return obj_summa + value
+#        if obj_status is False:
+#            # print(f'{obj_status}, {obj_summa}, -{value}')
+#            return obj_summa - value
+
+
+def test_data_summ1(block, data_start, data_end, owner_value: str = None):
+    summa = 0.0
+    summa_z = 0.0
+    summa_old = 0.0
+    summ = {}
+    for line in range(len(block)):
+        y = block[line]
+        if (data_start <= y.date) and (y.date <= data_end):
+            owner_op = y.owner
+            print(summa_z, summa_old)
+            # summa = test_data_summ_x(y.status, summa, y.summa)
+
+            # if owner_value is None:
+            #    if y.status is True:
+            #        summ[y.owner] = summ.setdefault(y.owner, 0) + y.summa
+            #    if y.status is False:
+            #        summ[y.owner] = summ.setdefault(y.owner, 0) - y.summa
+            #    print(summ.setdefault(y.owner, 0), y)
+            if owner_op == 'B':  # owner_value:
+
+                status_op = y.status
+                summa_value = y.summa
+                summa_old = summa_z
+                if status_op is True:
+                    summa_z += summa_value
+                if status_op is False:
+                    summa_z -= summa_value
+                    # if (y.netting is None):
+                    print(summa_old, summa_value, summa_z, y)
+    # summa_x = round(summa - summa_b - summa_k, 2)
+    print(f'Сумма общая за перидод с {data_start} до {data_end} = {summa}')
+    if owner_value is None:
+        for key, value in summ.items():
+            print(f'Сумма владельца "{key}" за перидод с {data_start} до {data_end} = {value}')
+    if owner_value is not None:
+        print(f'Сумма владельца {owner_value} за перидод с {data_start} до {data_end} = {summa_z}')
+    return summa
+
+
+def test_data_summ(block, data_start, data_end, owner_value: str = None):
+    summa = 0.0
+    summa_z = 0.0
+    summa_old = 0.0
+    for line in range(len(block)):
+        y = block[line]
+        if (data_start <= y.date) and (y.date <= data_end):
+            owner_op = y.owner
+
+            if owner_op == owner_value:  # owner_value:
+                summa_value = y.summa
+                status_op = y.status
+                summa_old = summa_z
+                if status_op is True:
+                    summa_value *= 1
+                if status_op is False:
+                    summa_value *= -1
+                summa_z += summa_value
+                # print(status_op,summa_value)
+                # if y.status is False and y.netting is None:
+                print(round(summa_old, 2), round(summa_value, 2), round(summa_z, 2), y)
+                if (summa_old + summa_value) != summa_z:
+                    print('ERROR-----------------------------------')
+    print(f'Сумма общая за перидод с {data_start} до {data_end} = {summa}')
+    if owner_value is not None:
+        print(f'Сумма владельца {owner_value} за перидод с {data_start} до {data_end} = {summa_z}')
+    return summa
+
+
+def test_data_summ1(block):
+    summa_all = 0
+    data_dict = {}
+    for line in range(len(block)):
+        data_line = block[line]
+        name = data_line.owner + ' ' + data_line.date[:4]
+        name_s = '- ' + data_line.date[:4]
+        summa = data_line.summa
+        if data_line.status is True:
+            data_dict[name] = data_dict.setdefault(name, 0) + summa
+            data_dict[name_s]= data_dict.setdefault(name_s, 0) + summa
+            summa_all +=summa
+        else:
+            data_dict[name] = data_dict.setdefault(name, 0) - summa
+            data_dict[name_s] = data_dict.setdefault(name_s, 0) - summa
+            summa_all -= summa
+    print(data_dict)
+    for key, value in data_dict.items():
+        print(key, value)
+    print('summa all=',summa_all)
+
+
+def test_visual_None(block):
+    for line in range(len(block)):
+        y = block[line]
+        if y.summa is None:
+            print(y)
+
+
+def com(block):
+    comp = {}
+    s = ''
+    for line in block:
+        comp[line.payment_purpose] = line.owner
+        s = line.payment_purpose
+        s.upper()
+        if s.find('ОХРАННОЙ') != -1:
+            print(s)
+            print(line)
+
+    for key, value in comp.items():
+        if key.find('ОХРАННОЙ') != -1:
+            print(f"'{key}':{value}")
+            print(line)

@@ -88,12 +88,14 @@ class LineData:
 
     def __str__(self):  # для создание формата выгрузки данных на экран
         if self.status is True:
-            status_str = 'Credit'
-        else:
-            status_str = 'Debit'
-        return f'{self.owner},{self.number},{self.date},{status_str},{self.summa},{self.payer_inn},' \
+            return f'{self.owner},{self.number},{self.date}, Credit ,{self.summa},{self.payer_inn},' \
                f'{self.payer_name},{self.recipient_inn},{self.recipient_name},{self.payment_purpose},' \
-               f'{self.settlement_bank}'
+               f'{self.settlement_bank} , {self.netting}'
+
+        else:
+            return f'{self.owner},{self.number},{self.date}, Debit ,-{self.summa},{self.payer_inn},' \
+               f'{self.payer_name},{self.recipient_inn},{self.recipient_name},{self.payment_purpose},' \
+               f'{self.settlement_bank} , {self.netting}'
 
     def clear(self):  # очистка значений перевод их в дефолтное значение
         self.payer_inn: str = None  # инн плательщика
@@ -107,3 +109,4 @@ class LineData:
         self.payment_purpose: str = None  # наименование(назначение) платежа
         self.settlement_bank: str = None  # расчетный счет банка осущесчтвляющий операции
         self.owner: str = 'X'  # владелец операции
+        self.netting : bool = None # индикатор операции взаиморасчетов

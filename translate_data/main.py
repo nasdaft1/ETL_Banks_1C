@@ -4,7 +4,7 @@ import test
 import configparser
 import work_file as wf
 import processing as pr
-# import compensation as cm
+import compensation as cm
 
 
 def sort_block(block: list):
@@ -31,15 +31,24 @@ if __name__ == '__main__':
 
     block = pr.payment_bank(block)
     test.test_owner(block)
-    test.test_visual(block, 'O')
+    block = cm.compensation(block)
+    test.test_owner(block)
+    test.test_visual_None(block)
+    test.test_visual(block, 'K1')
+    test.test_visual(block, 'B1')
 
+    test.test_data_summ1(block)
+    #test.test_data_summ(block, '2017.01.01', '2017.12.31', 'K')
+    wf.write_file('C:/report/text.csv', block)
+    # test.test_data_summ(block, '2016.01.01', '2016.12.31', 'B')
+    # test.test_data_summ(block, '2016.01.01', '2016.12.31')
+    # test.com(block)
     # print(block.__sizeof__())
     # pr.payment_bank(block)  # платежи в банк раскивывает хозяйствующим субъектам, которым принадлежат
     # block_m = cm.compensation(block)
     print('-------------------------------------------------------------------------------------------------------')
     # test.test_owner(block)  # подсчет значений обработанных и не обработанных
     #  block = cm.compensation(block)
-
 
     end_time = perf_counter()  # получение времени
     print(end_time - start_time)  # расчет времени

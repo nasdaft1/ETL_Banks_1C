@@ -23,8 +23,20 @@ def read_files_block(_path: str, _file: str):  # 'C:\\report\', '.txt'
 
 def write_file(path_file: str, block: list):  # запись списка в фаил
     file = open(path_file, 'w')
-    for line_block in block:
-        new_line = map(lambda x: str(x) + '\t', line_block)
-        file.writelines(new_line)
-        file.write('\n')
+    for line_x in block:
+        print(line_x)
+        if line_x.owner=='B':
+
+            file.write(str(line_x.number)+'\t')
+            file.write(str(line_x.date)+'\t')
+            if line_x.status is True:
+                file.write(str(line_x.summa)+'\t')
+            else:
+                file.write(str(-line_x.summa)+'\t')
+            file.write(str(line_x.payment_purpose)+'\t')
+            file.write(str(line_x.payer_name)+'\t')
+            file.write(str(line_x.recipient_name)+'\t')
+            #new_line = map(lambda x: str(x) + '\t', line_x)
+            #file.writelines(new_line)
+            file.write('\n')
     file.close()
