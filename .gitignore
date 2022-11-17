@@ -1,0 +1,6 @@
+.idea
+__pycache__
+venv
+translate_data/experiment.py
+*_old.py
+translate_data/dict_list_company.py
